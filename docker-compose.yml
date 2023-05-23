@@ -1,0 +1,44 @@
+version: '3'
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./apps/api-gateway/Dockerfile
+      target: development
+    command: npm run start:dev api-gateway
+    env_file:
+      - ./apps/api-gateway/.env
+    depends_on:
+      - postgres
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3004:3000'
+  wallet:
+    build:
+      context: .
+      dockerfile: ./apps/wallet/Dockerfile
+      target: development
+    command: npm run start:dev wallet
+    env_file:
+      - ./apps/wallet/.env
+    depends_on:
+      - postgres
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_DB=azin-task
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=4403
+    ports:
+      - '15432:5432'
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - '5672:5672'
